@@ -6,6 +6,7 @@ local interfaces = require('openmw.interfaces')
 local vfs = require('openmw.vfs')
 
 local excludeList = {}
+local favoriteItems = {}
 
 -- Startup Check --
 if (core.API_REVISION < 71) then
@@ -57,8 +58,20 @@ local function isExcluded(itemName)
     return false
 end
 
+-- compares item ID with list of favorites
+local function isFavorite(item)
+    for _, itemID in ipairs(favoriteItems) do
+        if item.id == itemID then
+            return true
+        end
+    end
+    return false
+end
+
 local function movetoContainer(item, container)
     if not isExcluded(item.type.records[item.recordId].name)
+    -- adds an additional check to see if InventoryExtender is installed and if it is favorites are checked
+    and not (core.contentFiles ~= nil and not core.contentFiles.has("InventoryExtender.omwscripts")) or not isFavorite(item)
     then
         item:moveInto(types.Container.inventory(container))
     end
@@ -254,6 +267,9 @@ local function runAutoSort(data)
     local containers = data.containers
     local autoSortObject = data.autoSortObject
     local posInfo = data.posInfo
+
+    -- update favoriteItems with the stored list of favorites in the autosorter
+    favoriteItems = data.favoriteItems
 
     if types.Player.objectIsInstance(actor) and not (world.isWorldPaused() or checkIfEquipped(actor, "autosort_pickup_ring"))
     then
