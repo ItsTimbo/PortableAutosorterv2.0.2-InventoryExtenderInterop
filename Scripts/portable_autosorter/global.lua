@@ -71,7 +71,7 @@ end
 local function movetoContainer(item, container)
     if not isExcluded(item.type.records[item.recordId].name)
     -- adds an additional check to see if InventoryExtender is installed and if it is favorites are checked
-    and not (core.contentFiles ~= nil and not core.contentFiles.has("InventoryExtender.omwscripts")) or not isFavorite(item)
+    and (core.contentFiles ~= nil and not core.contentFiles.has("InventoryExtender.omwscripts")) and not isFavorite(item)
     then
         item:moveInto(types.Container.inventory(container))
     end
