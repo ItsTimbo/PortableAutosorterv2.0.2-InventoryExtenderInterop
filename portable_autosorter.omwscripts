@@ -1,3 +1,0 @@
-PLAYER: scripts/portable_autosorter/player.lua
-GLOBAL: scripts/portable_autosorter/global.lua
-CUSTOM: scripts/portable_autosorter/autosort.lua
