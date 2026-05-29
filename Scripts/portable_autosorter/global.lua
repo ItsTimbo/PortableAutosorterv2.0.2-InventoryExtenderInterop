@@ -7,6 +7,7 @@ local vfs = require('openmw.vfs')
 
 local excludeList = {}
 local favoriteItems = {}
+local interopToggle = false
 
 -- Startup Check --
 if (core.API_REVISION < 71) then
@@ -14,6 +15,10 @@ if (core.API_REVISION < 71) then
 end
 if (core.contentFiles ~= nil and not core.contentFiles.has("portable_autosorter.omwaddon")) then
     error("Portable Autosorter omwaddon is not enabled.")
+end
+if (core.contentFiles ~= nil and core.contentFiles.has("InventoryExtender.omwscripts")) then
+    print('Inventory Extender detected. Activating interop.')
+    interopToggle = true
 end
 
 -- Internal Functions --
@@ -60,6 +65,9 @@ end
 
 -- compares item ID with list of favorites
 local function isFavorite(item)
+    if not interopToggle then
+        return false
+    end
     for _, itemID in ipairs(favoriteItems) do
         if item.id == itemID then
             return true
@@ -71,7 +79,7 @@ end
 local function movetoContainer(item, container)
     if not isExcluded(item.type.records[item.recordId].name)
     -- adds an additional check to see if InventoryExtender is installed and if it is favorites are checked
-    and (core.contentFiles ~= nil and not core.contentFiles.has("InventoryExtender.omwscripts")) and not isFavorite(item)
+    and not isFavorite(item)
     then
         item:moveInto(types.Container.inventory(container))
     end
